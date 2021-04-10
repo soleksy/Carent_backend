@@ -1,6 +1,6 @@
 package app.dao;
 
-import app.entity.CarEntity;
+import app.entity.RentalEntity;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,33 +9,32 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class CarDAOImpl implements CarDAO{
+public class RentalDAOImpl implements RentalDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
 
     @Override
-    public CarEntity getCar(Integer id) {
+    public RentalEntity getRental(int id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(CarEntity.class, id);
+        return session.get(RentalEntity.class, id);
     }
 
     @Override
-    public List<CarEntity> getCars() {
+    public List<RentalEntity> getRentals() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from CarEntity ", CarEntity.class).list();
+        return session.createQuery("from RentalEntity ", RentalEntity.class).list();
     }
 
     @Override
-    public void saveCar(CarEntity car) {
+    public void saveRental(RentalEntity rental) {
         Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(car);
-
+        session.saveOrUpdate(rental);
     }
 
     @Override
-    public void deleteCar(CarEntity car) {
+    public void deleteRental(RentalEntity rental) {
         Session session = sessionFactory.getCurrentSession();
-        session.delete(car);
+        session.saveOrUpdate(rental);
     }
 }

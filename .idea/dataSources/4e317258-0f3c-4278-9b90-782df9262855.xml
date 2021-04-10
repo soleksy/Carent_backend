@@ -862,10 +862,28 @@
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="258" parent="230" name="PRIMARY">
+    <column id="258" parent="230" name="role_id">
+      <Position>5</Position>
+      <DataType>int(11)|0s</DataType>
+    </column>
+    <column id="259" parent="230" name="password">
+      <Position>6</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="260" parent="230" name="fk_userrole">
+      <ColNames>role_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="261" parent="230" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
+    <foreign-key id="262" parent="230" name="fk_userrole">
+      <ColNames>role_id</ColNames>
+      <RefTableName>role</RefTableName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
   </database-model>
 </dataSource>

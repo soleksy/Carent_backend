@@ -1,6 +1,8 @@
 package app.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "car")
@@ -9,7 +11,7 @@ public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    Integer id;
+    private Integer id;
     @Column(name = "brand")
     private String brand;
     @Column(name = "model")
@@ -27,6 +29,9 @@ public class CarEntity {
     @Column(name = "air_conditioning")
     private Boolean airConditioning;
 
+    @OneToMany(mappedBy = "car", cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.REFRESH})
+    private Set<RentalEntity> rentals;
 
     public CarEntity() {
     }
@@ -101,5 +106,14 @@ public class CarEntity {
 
     public void setAirConditioning(Boolean airConditioning) {
         this.airConditioning = airConditioning;
+    }
+
+
+    public void addRental(RentalEntity rental){
+        if (rentals == null){
+            rentals = new HashSet<>();
+        }
+        rentals.add(rental);
+        rental.setCar(this);
     }
 }

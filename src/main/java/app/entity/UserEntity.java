@@ -2,7 +2,7 @@ package app.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 @Table(name = "user")
@@ -11,22 +11,33 @@ public class UserEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    int id;
+    private Integer id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "second_name")
     private String secondName;
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
+    @Column(name = "password")
+    private String password;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.REFRESH})
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.REFRESH})
+    private Set<RentalEntity> rentals;
 
     public UserEntity() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -52,5 +63,29 @@ public class UserEntity implements Serializable {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public void addRental(RentalEntity rental){
+        if (rentals == null){
+            rentals = new HashSet<>();
+        }
+        rentals.add(rental);
+        rental.setUser(this);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public RoleEntity getRole() {
+        return role;
+    }
+
+    public void setRole(RoleEntity role) {
+        this.role = role;
     }
 }

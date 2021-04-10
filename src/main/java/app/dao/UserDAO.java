@@ -8,4 +8,8 @@ public interface UserDAO {
     UserEntity getUser(int id);
 
     List<UserEntity> getUsers();
+
+    void saveUser(UserEntity user);
+
+    void deleteUser(UserEntity user);
 }

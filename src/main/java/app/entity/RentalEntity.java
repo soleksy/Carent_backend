@@ -10,11 +10,14 @@ public class RentalEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    Integer id;
-    @Column(name = "user_id")
-    private Integer userId;
-    @Column(name = "car_id")
-    private Integer carId;
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private CarEntity car;
     @Column(name = "start_date")
     private Date startDate;
     @Column(name = "end_date")
@@ -31,22 +34,6 @@ public class RentalEntity {
         this.id = id;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getCarId() {
-        return carId;
-    }
-
-    public void setCarId(Integer carId) {
-        this.carId = carId;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
@@ -61,5 +48,21 @@ public class RentalEntity {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public CarEntity getCar() {
+        return car;
+    }
+
+    public void setCar(CarEntity car) {
+        this.car = car;
     }
 }
