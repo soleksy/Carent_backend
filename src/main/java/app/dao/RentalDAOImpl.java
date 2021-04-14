@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class RentalDAOImpl implements RentalDAO {
@@ -15,9 +16,9 @@ public class RentalDAOImpl implements RentalDAO {
     private SessionFactory sessionFactory;
 
     @Override
-    public RentalEntity getRental(int id) {
+    public Optional<RentalEntity> getRental(int id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(RentalEntity.class, id);
+        return Optional.ofNullable(session.get(RentalEntity.class, id));
     }
 
     @Override
@@ -27,14 +28,16 @@ public class RentalDAOImpl implements RentalDAO {
     }
 
     @Override
-    public void saveRental(RentalEntity rental) {
+    public RentalEntity saveRental(RentalEntity rental) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(rental);
+        return rental;
     }
 
     @Override
-    public void deleteRental(RentalEntity rental) {
+    public void deleteRental(Integer id) {
         Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(rental);
+        RentalEntity rentalEntity = session.get(RentalEntity.class, id);
+        session.remove(rentalEntity);
     }
 }

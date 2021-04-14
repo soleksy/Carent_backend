@@ -1,16 +1,19 @@
 package app.service;
 
-import app.entity.RentalEntity;
+import app.dto.RentalRequestDto;
+import app.dto.RentalResponseDto;
 
 import java.util.List;
 
 public interface RentalService {
 
-    RentalEntity getRental(int id);
+    RentalResponseDto getRental(Integer id);
 
-    List<RentalEntity> getRentals();
+    List<RentalResponseDto> getRentals();
 
-    void saveRental(RentalEntity rentalEntity);
+    RentalResponseDto saveRental(RentalRequestDto rental);
 
-    void deleteRental(RentalEntity rentalEntity);
+    void deleteRental(Integer id);
+
+    RentalResponseDto updateRental(Integer id, RentalRequestDto car);
 }

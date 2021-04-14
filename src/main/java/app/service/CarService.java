@@ -1,15 +1,19 @@
 package app.service;
 
-import app.entity.CarEntity;
+import app.dto.CarRequestDto;
+import app.dto.CarResponseDto;
+
 import java.util.List;
 
 public interface CarService {
 
-    CarEntity getCar(Integer id);
+    CarResponseDto getCar(Integer id);
 
-    List<CarEntity> getCars();
+    List<CarResponseDto> getCars();
 
-    void saveUser(CarEntity car);
+    CarResponseDto saveCar(CarRequestDto car);
 
-    void deleteUser(CarEntity car);
+    void updateCar(Integer id, CarRequestDto car);
+
+    void deleteCar(Integer id);
 }

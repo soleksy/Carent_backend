@@ -3,14 +3,15 @@ package app.dao;
 import app.entity.CarEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CarDAO {
 
-    CarEntity getCar(Integer id);
+    Optional<CarEntity> getCar(Integer id);
 
     List<CarEntity> getCars();
 
-    void saveCar(CarEntity car);
+    CarEntity saveCar(CarEntity car);
 
-    void deleteCar(CarEntity car);
+    void deleteCar(Integer id);
 }
