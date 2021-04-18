@@ -18,6 +18,9 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserDAO userDAO;
 
+    @Autowired
+    private UserService self;
+
     @Override
     @Transactional
     public UserEntity getUser(int id) {
@@ -43,14 +46,14 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserEntity getUserByUsername(String username) {
         return userDAO.getUserByName(username);
     }
 
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = getUserByUsername(username);
+        UserEntity user = self.getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("User wrong login or password");
         }
