@@ -37,4 +37,11 @@ public class UserDAOImpl implements UserDAO {
         Session session = sessionFactory.getCurrentSession();
         session.delete(user);
     }
+
+    @Override
+    public UserEntity getUserByName(String username) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("from UserEntity as item where item.firstName = :username", UserEntity.class)
+                .setParameter("username", username).uniqueResult();
+    }
 }

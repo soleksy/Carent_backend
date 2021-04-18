@@ -1,6 +1,7 @@
 package app.service;
 
 import app.entity.UserEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface UserService {
     void saveUser(UserEntity user);
 
     void deleteUser(UserEntity user);
+
+    UserEntity getUserByUsername(String username);
 }

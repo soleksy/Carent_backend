@@ -1,5 +1,8 @@
 package app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -30,7 +33,21 @@ public class UserEntity implements Serializable {
             CascadeType.REFRESH})
     private Set<RentalEntity> rentals;
 
+    @Transient
+    private Set<SimpleGrantedAuthority> authorities;
+
     public UserEntity() {
+    }
+
+    @JsonIgnore
+    public Set<SimpleGrantedAuthority> getAuthorities() {
+        if (authorities == null) {
+            authorities = new HashSet<>();
+            if (role != null) { //TODO can role_id be null ?
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+            }
+        }
+        return authorities;
     }
 
     public Integer getId() {
@@ -73,6 +90,7 @@ public class UserEntity implements Serializable {
         rental.setUser(this);
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
