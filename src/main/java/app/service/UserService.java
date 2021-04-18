@@ -1,7 +1,6 @@
 package app.service;
 
 import app.entity.UserEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
