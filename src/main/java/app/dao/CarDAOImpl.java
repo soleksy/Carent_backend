@@ -7,17 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class CarDAOImpl implements CarDAO{
+public class CarDAOImpl implements CarDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
 
     @Override
-    public CarEntity getCar(Integer id) {
+    public Optional<CarEntity> getCar(Integer id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(CarEntity.class, id);
+        return Optional.ofNullable(session.get(CarEntity.class, id));
     }
 
     @Override
@@ -27,15 +28,16 @@ public class CarDAOImpl implements CarDAO{
     }
 
     @Override
-    public void saveCar(CarEntity car) {
+    public CarEntity saveCar(CarEntity car) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(car);
-
+        return car;
     }
 
     @Override
-    public void deleteCar(CarEntity car) {
+    public void deleteCar(Integer id) {
         Session session = sessionFactory.getCurrentSession();
-        session.delete(car);
+        CarEntity carEntity = session.get(CarEntity.class, id);
+        session.delete(carEntity);
     }
 }
