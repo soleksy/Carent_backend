@@ -1,6 +1,8 @@
 package app.service;
 
+import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
+import app.exception.ServerException;
 
 import java.util.List;
 
@@ -11,6 +13,8 @@ public interface UserService {
     List<UserEntity> getUsers();
 
     void saveUser(UserEntity user);
+
+    UserEntity enrollUser(UserRegistrationDto user) throws ServerException;
 
     void deleteUser(UserEntity user);
 

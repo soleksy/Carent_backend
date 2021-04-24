@@ -11,6 +11,8 @@ public interface UserDAO {
 
     void saveUser(UserEntity user);
 
+    void createUser(UserEntity user);
+
     void deleteUser(UserEntity user);
 
     UserEntity getUserByName(String username);

@@ -33,6 +33,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public void createUser(UserEntity user) {
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(user);
+    }
+
+    @Override
     public void deleteUser(UserEntity user) {
         Session session = sessionFactory.getCurrentSession();
         session.delete(user);
@@ -41,7 +47,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public UserEntity getUserByName(String username) {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from UserEntity as item where item.firstName = :username", UserEntity.class)
+        return session.createQuery("from UserEntity as item where item.email = :username", UserEntity.class)
                 .setParameter("username", username).uniqueResult();
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
@@ -34,6 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userService;
 
+    @Autowired
+    private PasswordEncryptor encryptor;
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -42,13 +45,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private void configureGlobal(AuthenticationManagerBuilder builder) throws Exception {
-        builder.userDetailsService(userService).passwordEncoder(NoOpPasswordEncoder.getInstance()); //TODO add real password encode
+        builder.userDetailsService(userService).passwordEncoder(encryptor.passwordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests() //TODO enable csrf
-                .antMatchers("/test/auth").permitAll()
+                .antMatchers(HttpMethod.POST, "/users/auth", "/users/register").permitAll()
+                .antMatchers(HttpMethod.GET, "/car").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(authEntryPoint)
                 .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .errors(errors)
                 .instance(req.getRequestURI())
+                .message("Invalid method arguments")
                 .build();
         errorResponse.setErrors(errors);
         log.error("Validation error: {}", errorResponse);

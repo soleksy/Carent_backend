@@ -1,6 +1,8 @@
 package app.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
@@ -8,7 +10,9 @@ import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user", uniqueConstraints = {
+        @UniqueConstraint(name = "email", columnNames = { "email" })
+})
 public class UserEntity implements Serializable {
 
     @Id
@@ -17,16 +21,26 @@ public class UserEntity implements Serializable {
     private Integer id;
     @Column(name = "first_name")
     private String firstName;
-    @Column(name = "second_name")
-    private String secondName;
+    @Column(name = "last_name")
+    private String lastName;
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
     @Column(name = "password")
     private String password;
+    @Getter
+    @Setter
+    @Column(name = "email")
+    private String email;
+
+    @Getter
+    @Setter
+    @JsonIgnore
+    @Column(name = "role_id")
+    private Integer roleId;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.REFRESH})
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", insertable=false, updatable=false)
     private RoleEntity role;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE,
@@ -66,12 +80,12 @@ public class UserEntity implements Serializable {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Date getDateOfBirth() {
@@ -99,6 +113,7 @@ public class UserEntity implements Serializable {
         this.password = password;
     }
 
+    @JsonIgnore
     public RoleEntity getRole() {
         return role;
     }
