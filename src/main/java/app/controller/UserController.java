@@ -8,7 +8,6 @@ import app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +23,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping(value = "/{id}")
+    public UserEntity getUser(@PathVariable Integer id) {
+        return userService.getUser(id);
+    }
 
     @PostMapping(value = "/auth")
     public String login(HttpServletRequest request) throws ServerException {

@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests() //TODO enable csrf
                 .antMatchers(HttpMethod.POST, "/users/auth", "/users/register").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/car").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(authEntryPoint)
                 .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

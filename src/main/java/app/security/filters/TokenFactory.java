@@ -45,6 +45,7 @@ public class TokenFactory {
         }
         Map<String, Object> payload = new HashMap<>();
         UserEntity user = userService.getUserByUsername(credentials[0]);
+        payload.put("userId", user.getId());
         payload.put("firstName", user.getFirstName());
         payload.put("lastName", user.getLastName());
         return generateToken(payload, credentials[0]);

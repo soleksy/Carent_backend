@@ -64,6 +64,7 @@ public class UserEntity implements Serializable {
         return authorities;
     }
 
+    @JsonIgnore
     public Integer getId() {
         return id;
     }
