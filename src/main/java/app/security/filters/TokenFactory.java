@@ -4,6 +4,7 @@ import app.entity.UserEntity;
 import app.exception.ServerErrorCode;
 import app.exception.ServerException;
 import app.service.UserService;
+import app.utils.TimeUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class TokenFactory {
     @Value("${spring.security.secret}")
     private String secret;
 
+    @Value("${spring.security.jwt.expiration}")
+    private int expirationTime;
+
     @Autowired
     private AuthenticationManager authManager;
 
@@ -32,7 +36,9 @@ public class TokenFactory {
     private UserService userService;
 
     private String generateToken(Map<String, Object> payload, String subject) {
-        return Jwts.builder().addClaims(payload).setSubject(subject).setIssuedAt(new Date())
+        Date currentDate = new Date();
+        return Jwts.builder().addClaims(payload).setSubject(subject).setIssuedAt(currentDate)
+                .setExpiration(TimeUtils.addMinutes(currentDate, expirationTime))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 

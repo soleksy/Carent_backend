@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/test")
-@CrossOrigin // TODO add cors filter
 public class TestController {
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
 

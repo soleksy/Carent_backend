@@ -1,13 +1,17 @@
 package app.controller;
 
+import app.dto.PasswordChangeDto;
 import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
+import app.exception.ServerErrorCode;
 import app.exception.ServerException;
 import app.security.filters.TokenFactory;
 import app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +19,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -24,9 +27,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PreAuthorize("hasAnyRole('rootAdmin', 'admin')")
     @GetMapping(value = "/{id}")
-    public UserEntity getUser(@PathVariable Integer id) {
+    public UserEntity getUserById(@PathVariable Integer id) {
         return userService.getUser(id);
+    }
+
+    @GetMapping(value = "/self")
+    public UserEntity getUser(Authentication authentication) throws ServerException {
+        if (authentication == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        return userService.getUserByUsername(authentication.getName());
+    }
+
+    @PutMapping(value = "/self/change-password")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void changePassword(Authentication authentication, @Valid @RequestBody PasswordChangeDto passwordChangeData) throws ServerException {
+        if (authentication == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        userService.changePassword(authentication.getName(), passwordChangeData);
     }
 
     @PostMapping(value = "/auth")

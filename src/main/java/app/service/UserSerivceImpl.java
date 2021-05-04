@@ -1,6 +1,7 @@
 package app.service;
 
 import app.dao.UserDAO;
+import app.dto.PasswordChangeDto;
 import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
 import app.entity.UserRoles;
@@ -52,7 +53,7 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional(rollbackOn = {ServerException.class})
     public UserEntity enrollUser(UserRegistrationDto user) throws ServerException {
-        validateRegistrationPasswords(user);
+        validatePasswordsMatch(user.getPassword(), user.getConfirmPassword());
         UserEntity newUser = Mapper.map(user, UserEntity.class);
         newUser.setRoleId(UserRoles.CLIENT);
         newUser.setPassword(encodingUtil.encode(newUser.getPassword()));
@@ -68,8 +69,8 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
         return newUser;
     }
 
-    private void validateRegistrationPasswords(UserRegistrationDto user) throws ServerException {
-        if (!user.getPassword().equals(user.getConfirmPassword())) {
+    private void validatePasswordsMatch(String password, String confirmPassword) throws ServerException {
+        if (!password.equals(confirmPassword)) {
             throw new ServerException(ServerErrorCode.PASSWORDS_DONT_MATCH);
         }
     }
@@ -87,11 +88,23 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional //TODO invalidate active token
+    public void changePassword(String username, PasswordChangeDto passwordChangeData) throws ServerException {
+        validatePasswordsMatch(passwordChangeData.getNewPassword(), passwordChangeData.getConfirmPassword());
+        UserEntity user = getUserByUsername(username);
+        if (user == null || !encodingUtil.verify(user.getPassword(), passwordChangeData.getOldPassword())) {
+            throw new ServerException(ServerErrorCode.INVALID_LOGIN_OR_PASSWORD);
+        }
+        user.setPassword(encodingUtil.encode(passwordChangeData.getNewPassword()));
+        saveUser(user);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = self.getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("User wrong login or password");
         }
-        return new User(user.getFirstName(), user.getPassword(), user.getAuthorities());
+        return new User(user.getEmail(), user.getPassword(), user.getAuthorities());
     }
 }

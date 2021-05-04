@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,6 +61,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 username = tokenFactory.getUsername(bearer);
             } catch (MalformedJwtException e) {
                 setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.INVALID_ACCESS_TOKEN);
+                return;
+            } catch (ExpiredJwtException e) {
+                setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.USER_LOGGED_OUT);
                 return;
             }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
