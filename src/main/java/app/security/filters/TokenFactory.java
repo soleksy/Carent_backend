@@ -7,12 +7,15 @@ import app.service.UserService;
 import app.utils.TimeUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+import javax.transaction.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -34,6 +37,9 @@ public class TokenFactory {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private String generateToken(Map<String, Object> payload, String subject) {
         Date currentDate = new Date();
@@ -61,6 +67,13 @@ public class TokenFactory {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
+    public String getBearer(String header) {
+        if (header != null && header.startsWith(AuthPrefix.BEARER)) {
+            return header.substring(AuthPrefix.BEARER.length()).trim();
+        }
+        return null;
+    }
+
     private String[] getUserCredentials(String authString) throws ServerException {
         if (authString == null || !authString.startsWith(AuthPrefix.BASIC)) {
             throw new ServerException(ServerErrorCode.INVALID_LOGIN_OR_PASSWORD);
@@ -73,6 +86,20 @@ public class TokenFactory {
             throw new ServerException(ServerErrorCode.INVALID_LOGIN_OR_PASSWORD);
         }
         return credentials;
+    }
+
+    @Transactional
+    public boolean isTokenValid(String accessToken) {
+        Session session = sessionFactory.getCurrentSession();
+        String queryStr = "SELECT id FROM invalid_tokens WHERE token = ? LIMIT 1";
+        return session.createSQLQuery(queryStr).setParameter(1, accessToken).getResultList().isEmpty();
+    }
+
+    @Transactional
+    public void invalidateToken(String accessToken) {
+        Session session = sessionFactory.getCurrentSession();
+        String queryStr = "INSERT INTO invalid_tokens (token) VALUES (?)";
+        session.createSQLQuery(queryStr).setParameter(1, accessToken).executeUpdate();
     }
 
 }

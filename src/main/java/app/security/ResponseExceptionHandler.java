@@ -40,6 +40,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler{
         switch (ex.getError()) {
             case INVALID_LOGIN_OR_PASSWORD:
             case INVALID_ACCESS_TOKEN:
+            case ACCESS_TOKEN_EXPIRED:
                 error.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
             case PASSWORDS_DONT_MATCH:

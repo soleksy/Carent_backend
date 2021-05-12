@@ -43,11 +43,21 @@ public class UserController {
 
     @PutMapping(value = "/self/change-password")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void changePassword(Authentication authentication, @Valid @RequestBody PasswordChangeDto passwordChangeData) throws ServerException {
+    public void changePassword(HttpServletRequest request, Authentication authentication, @Valid @RequestBody PasswordChangeDto passwordChangeData) throws ServerException {
         if (authentication == null) {
             throw new ServerException(ServerErrorCode.INVALID_ACCESS_TOKEN);
         }
-        userService.changePassword(authentication.getName(), passwordChangeData);
+        String token = tokenFactory.getBearer(request.getHeader("Authorization"));
+        userService.changePassword(token, authentication.getName(), passwordChangeData);
+    }
+
+    @PostMapping(value = "/self/logout")
+    public void logout(HttpServletRequest request, Authentication authentication) throws ServerException {
+        if (authentication == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        String token = tokenFactory.getBearer(request.getHeader("Authorization"));
+        userService.logout(token);
     }
 
     @PostMapping(value = "/auth")

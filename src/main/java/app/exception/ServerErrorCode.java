@@ -4,7 +4,7 @@ public enum ServerErrorCode {
 
     INVALID_LOGIN_OR_PASSWORD("Invalid login or password"),
     INVALID_ACCESS_TOKEN("Malformed token"),
-    USER_LOGGED_OUT("User has been logged out"),
+    ACCESS_TOKEN_EXPIRED("Access token expired"),
     PASSWORDS_DONT_MATCH("confirmPassword field does not match password field"),
     EMAIL_NOT_UNIQUE("Email address: |0| is already in use");
 

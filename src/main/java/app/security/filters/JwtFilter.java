@@ -55,20 +55,23 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authString = request.getHeader("Authorization");
         String username;
-        if (authString != null && authString.startsWith(AuthPrefix.BEARER)) {
-            String bearer = authString.substring(AuthPrefix.BEARER.length()).trim();
+        String bearer = tokenFactory.getBearer(authString);
+        if (bearer != null) {
             try {
                 username = tokenFactory.getUsername(bearer);
             } catch (MalformedJwtException e) {
                 setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.INVALID_ACCESS_TOKEN);
                 return;
             } catch (ExpiredJwtException e) {
-                setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.USER_LOGGED_OUT);
+                setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.ACCESS_TOKEN_EXPIRED);
+                return;
+            }
+            if (!tokenFactory.isTokenValid(bearer)) {
+                setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.ACCESS_TOKEN_EXPIRED);
                 return;
             }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userService.loadUserByUsername(username);
-                //TODO validate token claims
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(token);

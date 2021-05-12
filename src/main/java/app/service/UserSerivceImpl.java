@@ -8,6 +8,7 @@ import app.entity.UserRoles;
 import app.exception.ServerErrorCode;
 import app.exception.ServerException;
 import app.mapper.Mapper;
+import app.security.filters.TokenFactory;
 import app.utils.EncodingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,6 +32,9 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private EncodingUtil encodingUtil;
+
+    @Autowired
+    private TokenFactory tokenFactory;
 
     @Override
     @Transactional
@@ -88,8 +92,8 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    @Transactional //TODO invalidate active token
-    public void changePassword(String username, PasswordChangeDto passwordChangeData) throws ServerException {
+    @Transactional
+    public void changePassword(String token, String username, PasswordChangeDto passwordChangeData) throws ServerException {
         validatePasswordsMatch(passwordChangeData.getNewPassword(), passwordChangeData.getConfirmPassword());
         UserEntity user = getUserByUsername(username);
         if (user == null || !encodingUtil.verify(user.getPassword(), passwordChangeData.getOldPassword())) {
@@ -97,6 +101,7 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
         }
         user.setPassword(encodingUtil.encode(passwordChangeData.getNewPassword()));
         saveUser(user);
+        tokenFactory.invalidateToken(token);
     }
 
     @Override
@@ -106,5 +111,10 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
             throw new UsernameNotFoundException("User wrong login or password");
         }
         return new User(user.getEmail(), user.getPassword(), user.getAuthorities());
+    }
+
+    @Override
+    public void logout(String token) {
+        tokenFactory.invalidateToken(token);
     }
 }

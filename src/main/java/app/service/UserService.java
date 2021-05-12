@@ -21,5 +21,7 @@ public interface UserService {
 
     UserEntity getUserByUsername(String username);
 
-    void changePassword(String username, PasswordChangeDto passwordChangeData) throws ServerException;
+    void changePassword(String token, String username, PasswordChangeDto passwordChangeData) throws ServerException;
+
+    void logout(String token);
 }
