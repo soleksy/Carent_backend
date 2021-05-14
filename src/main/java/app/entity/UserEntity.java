@@ -50,6 +50,7 @@ public class UserEntity implements Serializable {
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.REFRESH})
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<RentalEntity> rentals;
 
     @Transient
