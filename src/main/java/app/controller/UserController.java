@@ -5,12 +5,12 @@ import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
 import app.exception.ServerErrorCode;
 import app.exception.ServerException;
+import app.security.AuthorizedAs;
 import app.security.filters.TokenFactory;
 import app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +27,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PreAuthorize("hasAnyRole('rootAdmin', 'admin')")
+    @AuthorizedAs({"rootAdmin", "admin"})
     @GetMapping(value = "/{id}")
     public UserEntity getUserById(@PathVariable Integer id) {
         return userService.getUser(id);

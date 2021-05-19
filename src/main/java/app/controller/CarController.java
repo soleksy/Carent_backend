@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.CarRequestDto;
 import app.dto.CarResponseDto;
+import app.security.AuthorizedAs;
 import app.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,13 @@ public class CarController {
         return carService.getCar(id);
     }
 
+    @AuthorizedAs({"admin", "rootAdmin"})
     @PostMapping
     public CarResponseDto addCar(@RequestBody @Valid CarRequestDto car) {
         return carService.saveCar(car);
     }
 
+    @AuthorizedAs({"admin", "rootAdmin"})
     @PutMapping("{id}")
     void updateCar(@PathVariable @NotNull Integer id, @RequestBody @Valid CarRequestDto car) {
         carService.updateCar(id, car);

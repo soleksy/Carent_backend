@@ -6,7 +6,8 @@ public enum ServerErrorCode {
     INVALID_ACCESS_TOKEN("Malformed token"),
     ACCESS_TOKEN_EXPIRED("Access token expired"),
     PASSWORDS_DONT_MATCH("confirmPassword field does not match password field"),
-    EMAIL_NOT_UNIQUE("Email address: |0| is already in use");
+    EMAIL_NOT_UNIQUE("Email address: |0| is already in use"),
+    INSUFFICIENT_PRIVILEGES("Insufficient privileges to access this resource");
 
     private final String msg;
 

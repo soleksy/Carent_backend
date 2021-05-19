@@ -37,20 +37,23 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler{
     }
 
     private ResponseEntity<ErrorTemplate> getResponse(ServerException ex, ErrorTemplate error) {
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         switch (ex.getError()) {
             case INVALID_LOGIN_OR_PASSWORD:
             case INVALID_ACCESS_TOKEN:
             case ACCESS_TOKEN_EXPIRED:
-                error.setStatus(HttpStatus.UNAUTHORIZED.value());
-                return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+                httpStatus = HttpStatus.UNAUTHORIZED;
+                break;
             case PASSWORDS_DONT_MATCH:
             case EMAIL_NOT_UNIQUE:
-                error.setStatus(HttpStatus.BAD_REQUEST.value());
-                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-            default:
-                error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+                httpStatus = HttpStatus.BAD_REQUEST;
+                break;
+            case INSUFFICIENT_PRIVILEGES:
+                httpStatus = HttpStatus.FORBIDDEN;
+                break;
         }
+        error.setStatus(httpStatus.value());
+        return new ResponseEntity<>(error, httpStatus);
     }
 
 }

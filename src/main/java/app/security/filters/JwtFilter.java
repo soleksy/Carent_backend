@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -58,15 +59,15 @@ public class JwtFilter extends OncePerRequestFilter {
         String bearer = tokenFactory.getBearer(authString);
         if (bearer != null) {
             try {
+                if (!tokenFactory.isTokenValid(bearer)) {
+                    setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.ACCESS_TOKEN_EXPIRED);
+                    return;
+                }
                 username = tokenFactory.getUsername(bearer);
-            } catch (MalformedJwtException e) {
+            } catch (MalformedJwtException | SignatureException e) {
                 setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.INVALID_ACCESS_TOKEN);
                 return;
             } catch (ExpiredJwtException e) {
-                setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.ACCESS_TOKEN_EXPIRED);
-                return;
-            }
-            if (!tokenFactory.isTokenValid(bearer)) {
                 setError(response, request, HttpStatus.UNAUTHORIZED, ServerErrorCode.ACCESS_TOKEN_EXPIRED);
                 return;
             }
