@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.dto.PasswordChangeDto;
+import app.dto.UserModificationDto;
 import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
 import app.exception.ServerErrorCode;
@@ -49,6 +50,16 @@ public class UserController {
         }
         String token = tokenFactory.getBearer(request.getHeader("Authorization"));
         userService.changePassword(token, authentication.getName(), passwordChangeData);
+    }
+
+    @PutMapping(value = "/self/modify")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public String modifyUser(HttpServletRequest request, Authentication authentication, @Valid @RequestBody UserModificationDto modificationDto) throws ServerException {
+        if (authentication == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        String token = tokenFactory.getBearer(request.getHeader("Authorization"));
+        return userService.modifyUser(token, authentication.getName(), modificationDto);
     }
 
     @PostMapping(value = "/self/logout")

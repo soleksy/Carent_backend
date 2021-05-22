@@ -1,6 +1,7 @@
 package app.service;
 
 import app.dto.PasswordChangeDto;
+import app.dto.UserModificationDto;
 import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
 import app.exception.ServerException;
@@ -22,6 +23,8 @@ public interface UserService {
     UserEntity getUserByUsername(String username);
 
     void changePassword(String token, String username, PasswordChangeDto passwordChangeData) throws ServerException;
+
+    String modifyUser(String token, String username, UserModificationDto userModificationDto) throws ServerException;
 
     void logout(String token);
 }

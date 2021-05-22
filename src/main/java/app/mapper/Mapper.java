@@ -18,4 +18,8 @@ public class Mapper {
     public static <S, T> T map(S source, Class<T> targetClass) {
         return modelMapper.map(source, targetClass);
     }
+
+    public static <S, T> void map(S source, T target) {
+        modelMapper.map(source, target);
+    }
 }

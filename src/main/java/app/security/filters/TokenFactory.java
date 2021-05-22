@@ -55,12 +55,17 @@ public class TokenFactory {
         } catch (BadCredentialsException e) {
             throw new ServerException(ServerErrorCode.INVALID_LOGIN_OR_PASSWORD);
         }
+        return issueToken(credentials[0]);
+    }
+
+    public String issueToken(String username) {
         Map<String, Object> payload = new HashMap<>();
-        UserEntity user = userService.getUserByUsername(credentials[0]);
+        UserEntity user = userService.getUserByUsername(username);
         payload.put("userId", user.getId());
         payload.put("firstName", user.getFirstName());
         payload.put("lastName", user.getLastName());
-        return generateToken(payload, credentials[0]);
+        payload.put("role", user.getRole().getRole());
+        return generateToken(payload, username);
     }
 
     public String getUsername(String token) {

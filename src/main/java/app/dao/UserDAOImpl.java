@@ -27,9 +27,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void saveUser(UserEntity user) {
+    public void saveUser(UserEntity user, boolean flush) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(user);
+        if (flush) {
+            session.flush();
+        }
     }
 
     @Override

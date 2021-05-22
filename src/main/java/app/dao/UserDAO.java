@@ -9,7 +9,7 @@ public interface UserDAO {
 
     List<UserEntity> getUsers();
 
-    void saveUser(UserEntity user);
+    void saveUser(UserEntity user, boolean flush);
 
     void createUser(UserEntity user);
 

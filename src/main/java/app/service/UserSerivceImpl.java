@@ -2,6 +2,7 @@ package app.service;
 
 import app.dao.UserDAO;
 import app.dto.PasswordChangeDto;
+import app.dto.UserModificationDto;
 import app.dto.UserRegistrationDto;
 import app.entity.UserEntity;
 import app.entity.UserRoles;
@@ -51,7 +52,7 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void saveUser(UserEntity user) {
-        userDAO.saveUser(user);
+        userDAO.saveUser(user, false);
     }
 
     @Override
@@ -64,11 +65,7 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
         try {
             userDAO.createUser(newUser);
         } catch (DataIntegrityViolationException e) {
-            String errorMsg = e.getMostSpecificCause().getMessage();
-            if (errorMsg != null && errorMsg.contains("Duplicate entry")) {
-                throw new ServerException(ServerErrorCode.EMAIL_NOT_UNIQUE, newUser.getEmail());
-            }
-            throw e;
+            throwUniqueEmailViolationException(e, newUser.getEmail());
         }
         return newUser;
     }
@@ -105,6 +102,23 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional(rollbackOn = {ServerException.class})
+    public String modifyUser(String token, String username, UserModificationDto userModificationDto) throws ServerException {
+        UserEntity user = getUserByUsername(username);
+        if (user == null) {
+            throw new ServerException(ServerErrorCode.INVALID_LOGIN_OR_PASSWORD);
+        }
+        Mapper.map(userModificationDto, user);
+        try {
+            userDAO.saveUser(user, true);
+        } catch (DataIntegrityViolationException e) {
+            throwUniqueEmailViolationException(e, userModificationDto.getEmail());
+        }
+        tokenFactory.invalidateToken(token);
+        return tokenFactory.issueToken(user.getEmail());
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = self.getUserByUsername(username);
         if (user == null) {
@@ -116,5 +130,13 @@ public class UserSerivceImpl implements UserService, UserDetailsService {
     @Override
     public void logout(String token) {
         tokenFactory.invalidateToken(token);
+    }
+
+    private void throwUniqueEmailViolationException(DataIntegrityViolationException e, String email) throws ServerException {
+        String errorMsg = e.getMostSpecificCause().getMessage();
+        if (errorMsg != null && errorMsg.contains("Duplicate entry")) {
+            throw new ServerException(ServerErrorCode.EMAIL_NOT_UNIQUE, email);
+        }
+        throw e;
     }
 }

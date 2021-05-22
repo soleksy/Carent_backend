@@ -60,9 +60,7 @@ public class UserEntity implements Serializable {
     public Set<SimpleGrantedAuthority> getAuthorities() {
         if (authorities == null) {
             authorities = new HashSet<>();
-            if (role != null) { //TODO can role_id be null ?
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
-            }
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
         }
         return authorities;
     }
