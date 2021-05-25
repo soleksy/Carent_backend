@@ -62,6 +62,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
+    @Transactional
     public RentalResponseDto updateRental(Integer id, RentalRequestDto rental) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(rental);

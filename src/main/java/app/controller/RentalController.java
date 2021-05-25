@@ -33,8 +33,8 @@ public class RentalController {
     }
 
     @PutMapping("{id}")
-    void updateRental(@PathVariable @NotNull Integer id, @RequestBody @Valid RentalRequestDto car) {
-        rentalService.updateRental(id, car);
+    public RentalResponseDto updateRental(@PathVariable @NotNull Integer id, @RequestBody @Valid RentalRequestDto car) {
+        return rentalService.updateRental(id, car);
     }
 
     @DeleteMapping("{id}")
