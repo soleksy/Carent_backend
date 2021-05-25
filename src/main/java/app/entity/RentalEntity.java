@@ -1,9 +1,16 @@
 package app.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Builder
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "rental")
 public class RentalEntity {
 
@@ -23,8 +30,6 @@ public class RentalEntity {
     @Column(name = "end_date")
     private Date endDate;
 
-    public RentalEntity() {
-    }
 
     public Integer getId() {
         return id;
