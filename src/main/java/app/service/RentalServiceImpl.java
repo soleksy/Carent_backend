@@ -78,4 +78,10 @@ public class RentalServiceImpl implements RentalService {
                 .build();
         return Mapper.map(rentalDAO.saveRental(entity), RentalResponseDto.class);
     }
+
+    @Override
+    @Transactional
+    public List<RentalEntity> getUserRentals(Integer userId) {
+        return rentalDAO.getUserRentals(userId);
+    }
 }

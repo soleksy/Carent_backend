@@ -1,13 +1,13 @@
 package app.controller;
 
-import app.dto.PasswordChangeDto;
-import app.dto.UserModificationDto;
-import app.dto.UserRegistrationDto;
+import app.dto.*;
+import app.entity.RentalEntity;
 import app.entity.UserEntity;
 import app.exception.ServerErrorCode;
 import app.exception.ServerException;
 import app.security.AuthorizedAs;
 import app.security.filters.TokenFactory;
+import app.service.RentalService;
 import app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -27,6 +29,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RentalService rentalService;
 
     @AuthorizedAs({"rootAdmin", "admin"})
     @GetMapping(value = "/{id}")
@@ -80,6 +85,11 @@ public class UserController {
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserEntity register(@RequestBody @Valid UserRegistrationDto newUser) throws ServerException {
         return userService.enrollUser(newUser);
+    }
+
+    @GetMapping("/{userId}/rentals")
+    public List<RentalEntity> getUserRental(@PathVariable @NotNull Integer userId) {
+        return rentalService.getUserRentals(userId);
     }
 
 }

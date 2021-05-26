@@ -68,9 +68,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors().and().authorizeRequests() //TODO enable csrf
+        http.csrf().disable().cors().and().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/users/auth", "/users/register").permitAll()
-                .antMatchers(HttpMethod.GET, "/car").permitAll()
+                .antMatchers(HttpMethod.GET, "/car/{\\d+}", "/car").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(authEntryPoint)
                 .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

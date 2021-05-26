@@ -14,4 +14,6 @@ public interface RentalDAO {
     RentalEntity saveRental(RentalEntity rentalEntity);
 
     void deleteRental(Integer id);
+
+    List<RentalEntity> getUserRentals(Integer userId);
 }

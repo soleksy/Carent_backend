@@ -40,4 +40,11 @@ public class RentalDAOImpl implements RentalDAO {
         RentalEntity rentalEntity = session.get(RentalEntity.class, id);
         session.remove(rentalEntity);
     }
+
+    @Override
+    public List<RentalEntity> getUserRentals(Integer userId) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("from RentalEntity as item where item.user.id = :userId", RentalEntity.class)
+                .setParameter("userId", userId).getResultList();
+    }
 }
