@@ -21,7 +21,7 @@ import java.util.*;
 })
 public class UserEntity implements Serializable {
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
